@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.min.css' rel='stylesheet' />
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.2/main.min.js'></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'timeGridWeek',
+                editable: true,
+                selectable: true,
+                events: '/api/availability/', // API endpoint to fetch availability
+                eventDrop: function(info) {
+                    // Handle event drop
+                    fetch('/api/update_task/', {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            id: info.event.id,
+                            start_time: info.event.start,
+                            end_time: info.event.end
+                        }),
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}',
+                        },
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert('Task updated!');
+                    });
+                },
+                select: function(info) {
+                    // Handle selecting a time slot
+                    let taskName = prompt("Enter Task Name:");
+                    if (taskName) {
+                        fetch('/api/create_task/', {
+                            method: 'POST',
+                            body: JSON.stringify({
+                                task_name: taskName,
+                                start_time: info.start,
+                                end_time: info.end
+                            }),
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': '{{ csrf_token }}',
+                            },
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            calendar.addEvent({
+                                id: data.id,
+                                title: taskName,
+                                start: info.start,
+                                end: info.end,
+                            });
+                        });
+                    }
+                }
+            });
+            calendar.render();
+        });
+    </script>
+</head>
+<body>
+    <div id='calendar'></div>
+</body>
+</html>

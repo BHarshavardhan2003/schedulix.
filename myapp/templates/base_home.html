@@ -1,0 +1,168 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>{% block title %}Schedulix Dashboard{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<link href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.11.0/main.min.css' rel='stylesheet' />
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.11.0/main.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.11.0/locales-all.min.js'></script>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            overflow-x: hidden;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+        .sidebar {
+            height: 100vh;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #343a40;
+            padding-top: 20px;
+            transition: width 0.3s;
+            overflow-x: hidden;
+            white-space: nowrap;
+        }
+        .sidebar .logo {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .sidebar .logo img {
+            width: 150px;
+            margin: 0 auto;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #495057;
+        }
+        .sidebar ul li a {
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .sidebar ul li a i {
+            margin-right: 10px;
+        }
+        .sidebar ul li a:hover {
+            background-color: #495057;
+            color: #ced4da;
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            transition: margin-left 0.3s;
+        }
+        .toggle-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 30px;
+            cursor: pointer;
+            color: #343a40;
+            transition: color 0.3s;
+        }
+        .toggle-btn:hover {
+            color: #007bff;
+        }
+        .open .sidebar {
+            width: 80px;
+        }
+        .open .main-content {
+            margin-left: 80px;
+        }
+        .open .toggle-btn {
+            left: 90px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .badge-danger {
+        background-color: red;
+         color: white;
+        border-radius: 50%;
+        padding: 5px 10px;
+        font-size: 12px;
+        margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+           <img src="{% static 'logo.png' %}" alt="logo">
+        </div>
+        <ul>
+            <li><a href="#"><i class="fas fa-tachometer-alt"></i>home</a></li>
+            {% if user.is_staff %}
+                <li><a href="{% url 'add_time_slot' %}"><i class="fas fa-calendar-alt"></i>add_time_slot</a></li>
+                <li><a href="{% url 'manage_appointments' %}"><i class="fas fa-tasks"></i>Appointments Requests</a></li>
+            {% endif %}
+     {% if not user.is_staff %}
+        <li><a href="{% url 'book_appointment' %}"><i class="fas fa-tasks"></i>Book Appointmnet</a></li>
+         <li><a href="{% url 'notifications' %}">
+            <i class="fas fa-bell"></i> Notifications
+            {% if unread_notifications_count > 0 %}
+                <span class="badge">{{ unread_notifications_count }}</span>
+            {% endif %}
+        </a></li>
+    {% endif %}
+
+            <li><a href="#"><i class="fas fa-cogs"></i>Manage Users</a></li>
+            <li><a href="{% url 'logout_confirm' %}"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+
+        <h1>Welcome to Schedulix Dashboard, {{ user.username }}!</h1>
+        <p>Your one-stop solution for managing schedules and tasks efficiently.</p>
+    {% block content %}
+          <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Dashboard Overview</h5>
+                    {% block content2 %}
+                        <p class="card-text">hfeingkicf3hjlbgr.</p>
+                        {% endblock %}
+                    <p class="card-text">Here you can see key statistics and insights.</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Upcoming Appointments</h5>
+                    <p class="card-text">Manage and view upcoming appointments.</p>
+                </div>
+            </div>
+    {% endblock %}
+    </div>
+  {% block content3 %}
+
+      <h1>hello this is from the base</h1>
+  {% endblock %}
+
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

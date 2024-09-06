@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Appointments</title>
+</head>
+<body>
+    <h1>Manage Appointments</h1>
+    <table>
+        <tr>
+            <th>User</th>
+            <th>Date</th>
+            <th>Time Slot</th>
+            <th>Purpose</th>
+            <th>Actions</th>
+        </tr>
+        {% for appointment in appointments %}
+        <tr>
+            <td>{{ appointment.user.username }}</td>
+            <td>{{ appointment.appointment_date }}</td>
+            <td>{{ appointment.time_slot }}</td>
+            <td>{{ appointment.purpose }}</td>
+            <td>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="appointment_id" value="{{ appointment.id }}">
+                    <button type="submit" name="action" value="accept">Accept</button>
+                    <button type="submit" name="action" value="reject">Reject</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

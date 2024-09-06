@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Time Slot List</title>
+</head>
+<body>
+    <h1>Time Slot List</h1>
+    <ul>
+        {% for time_slot in time_slots %}
+            <li>{{ time_slot.admin }} - {{ time_slot.day_of_week }}: {{ time_slot.start_time }} to {{ time_slot.end_time }}</li>
+        {% empty %}
+            <li>No time slots available.</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'add_time_slot' %}">Add New Time Slot</a>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{% extends "base_home.html" %}
+
+{% block content %}
+  <h2>Book Appointment</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Book Appointment</button>
+  </form>
+    <div class="alert alert-danger mt-3" role="alert">
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+{% endblock %}
