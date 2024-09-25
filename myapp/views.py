@@ -194,4 +194,148 @@ def notifications(request):
 
     return render(request, 'notifications.html', {'notifications': user_notifications})
 
+from datetime import timedelta, datetime
+
+from django.shortcuts import render
+
+# Create your views here.
+from django.shortcuts import render
+from django.http import JsonResponse
+from .models import Events
+from django.shortcuts import render
+from django.http import JsonResponse
+from .models import Events
+from datetime import datetime, timedelta
+from .models import Events
+
+
+# Create your views here.
+def index(request):
+    all_events = Events.objects.all()
+    context = {
+        "events": all_events,
+    }
+    return render(request, 'index.html', context)
+
+
+def all_events(request):
+    all_events = Events.objects.all()
+    out = []
+    for event in all_events:
+        out.append({
+            'title': event.name,
+            'id': event.id,
+            'start': event.start.strftime("%m/%d/%Y, %H:%M:%S"),
+            'end': event.end.strftime("%m/%d/%Y, %H:%M:%S"),
+        })
+
+    return JsonResponse(out, safe=False)
+
+
+def add_event(request):
+    start = request.GET.get("start", None)
+    end = request.GET.get("end", None)
+    title = request.GET.get("title", None)
+    event = Events(name=str(title), start=start, end=end)
+    event.save()
+    data = {}
+    return JsonResponse(data)
+
+
+def update(request):
+    start = request.GET.get("start", None)
+    end = request.GET.get("end", None)
+    title = request.GET.get("title", None)
+    id = request.GET.get("id", None)
+    event = Events.objects.get(id=id)
+    event.start = start
+    event.end = end
+    event.name = title
+    event.save()
+    data = {}
+    return JsonResponse(data)
+
+
+def remove(request):
+    id = request.GET.get("id", None)
+    event = Events.objects.get(id=id)
+    event.delete()
+    data = {}
+    return JsonResponse(data)
+
+
+from datetime import timedelta, datetime
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+
+@csrf_exempt
+def add_recurring_event(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)  # Parse JSON body
+            title = data.get('title')
+            start_date = data.get('start_date')
+            end_date = data.get('end_date')
+            start_time = data.get('start_time')
+            duration = int(data.get('duration'))  # Convert duration to int
+            recurrence = data.get('recurrence')
+
+            # Process the data and add the recurring event logic here
+            start_date = datetime.strptime(start_date, "%Y-%m-%d")
+            end_date = datetime.strptime(end_date, "%Y-%m-%d")
+            start_time = datetime.strptime(start_time, "%H:%M").time()
+
+            # Create the initial event
+            initial_event_start = datetime.combine(start_date, start_time)
+            initial_event_end = initial_event_start + timedelta(hours=duration)
+
+            # Create and save the initial event
+            initial_event = Events(
+                name=title,
+                start=initial_event_start,
+                end=initial_event_end,
+                is_recurring=True  # Mark as recurring
+            )
+            initial_event.save()
+
+            # Generate subsequent events based on the recurrence type
+            current_date = start_date
+            while current_date <= end_date:
+                if current_date != start_date:  # Skip the first event
+                    new_event_start = datetime.combine(current_date, start_time)
+                    new_event_end = new_event_start + timedelta(hours=duration)
+
+                    # Create and save the new recurring event
+                    new_event = Events(
+                        name=title,
+                        start=new_event_start,
+                        end=new_event_end,
+                        is_recurring=True
+                    )
+                    new_event.save()
+
+                # Increment the date based on recurrence type
+                if recurrence == 'daily':
+                    current_date += timedelta(days=1)
+                elif recurrence == 'weekly':
+                    current_date += timedelta(weeks=1)
+                elif recurrence == 'monthly':
+                    next_month = current_date.month % 12 + 1
+                    next_year = current_date.year + (current_date.month // 12)
+                    current_date = current_date.replace(year=next_year, month=next_month)
+
+            return JsonResponse({'status': 'Recurring event added successfully'})
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except ValueError as e:
+            return JsonResponse({'error': str(e)}, status=400)
+
+    elif request.method == "GET":
+        # Render the form for adding recurring events
+        return render(request, 'add_recurring_event.html')
+
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
 
