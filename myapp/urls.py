@@ -14,5 +14,9 @@ urlpatterns = [
     path('appointment_success/',views.appointment_success, name='appointment_success' ),
     path('manage_appointments/',views.manage_appointments, name='manage_appointments' ),
     path('notifications/',views.notifications, name='notifications' ),
+    path('all_events/', views.all_events, name='all_events'),
+    path('add_event/', views.add_event, name='add_event'),
+    path('update/', views.update, name='update'),
+    path('remove/',views.remove,name='remove'),
 
    ]
