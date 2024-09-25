@@ -1,14 +1,69 @@
 {% extends 'base_home.html' %}
 
 {% block content %}
-    <h2>Notifications</h2>
-    <ul>
-        {% for notification in notifications %}
-            <li class="{% if not notification.is_read %}unread{% endif %}">
-                {{ notification.message }} - {{ notification.timestamp }}
-            </li>
-        {% empty %}
-            <li>No notifications.</li>
-        {% endfor %}
-    </ul>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+        }
+        h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .notifications-container {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .notifications-container li {
+            padding: 15px;
+            background-color: #fff;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
+        li.unread {
+            background-color: #eaf8ff;
+            border-color: #007bff;
+        }
+        .notifications-container li:hover {
+            background-color: #f1f1f1;
+        }
+        .timestamp {
+            font-size: 12px;
+            color: #888;
+        }
+        .empty-message {
+            font-size: 16px;
+            color: #666;
+            text-align: center;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+    </style>
+
+    <div class="notifications-container">
+        <h2>Notifications</h2>
+        <ul>
+            {% for notification in notifications %}
+                <li class="{% if not notification.is_read %}unread{% endif %}">
+                    <span>{{ notification.message }}</span>
+                    <span class="timestamp">{{ notification.timestamp }}</span>
+                </li>
+            {% empty %}
+                <li class="empty-message">No notifications.</li>
+            {% endfor %}
+        </ul>
+    </div>
 {% endblock %}

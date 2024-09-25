@@ -180,6 +180,11 @@ def manage_appointments(request):
 def appointment_success(request):
     return render(request, 'appointment_success.html')
 
+def calendar(request):
+    return render(request, 'calendar.html')
+def recurring_event (request):
+    return render(request, 'recurring_event.html')
+
 @login_required
 def notifications(request):
     user_notifications = Notification.objects.filter(user=request.user)
@@ -188,3 +193,5 @@ def notifications(request):
     user_notifications.filter(is_read=False).update(is_read=True)
 
     return render(request, 'notifications.html', {'notifications': user_notifications})
+
+
