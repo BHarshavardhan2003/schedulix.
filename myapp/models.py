@@ -56,11 +56,12 @@ from django.contrib.auth.models import User  # Import User model
 
 class Events(models.Model):
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=255, null=True, blank=True)
+    title = models.CharField(max_length=255, null=True, blank=True)
     start = models.DateTimeField(null=True, blank=True)
     end = models.DateTimeField(null=True, blank=True)
     is_recurring = models.BooleanField(default=False)  # Indicate if the event is recurring
     admin = models.ForeignKey(User, on_delete=models.CASCADE)  # Link event to an admin (user)
+    is_booked = models.BooleanField(default=True)  # New field to indicate if the event is booked
 
     class Meta:
         db_table = "tblevents"
