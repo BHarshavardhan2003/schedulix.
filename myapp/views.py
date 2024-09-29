@@ -23,6 +23,7 @@ def register(request):
     return render(request, 'register_view.html', {'form': form})
 
 
+
 def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -31,11 +32,17 @@ def login_view(request):
 
         if user is not None:
             login(request, user)
-            return redirect('home')
+
+            # Check if the user is staff
+            if user.is_staff:
+                return redirect('month')  # Redirect to 'month' page if the user is staff
+            else:
+                return redirect('home')  # Redirect to 'home' page if the user is not staff
         else:
             messages.info(request, 'Username OR password is incorrect')
 
     return render(request, 'login_view.html')
+
 
 @login_required
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
@@ -218,8 +225,12 @@ def index(request):
     return render(request, 'index.html', context)
 
 
+from django.http import JsonResponse
+from .models import Events
+
 def all_events(request):
-    all_events = Events.objects.all()
+    admin = request.user  # Get the currently logged-in user (admin)
+    all_events = Events.objects.filter(admin=admin)  # Filter events by admin
     out = []
     for event in all_events:
         out.append({
@@ -228,18 +239,20 @@ def all_events(request):
             'start': event.start.strftime("%m/%d/%Y, %H:%M:%S"),
             'end': event.end.strftime("%m/%d/%Y, %H:%M:%S"),
         })
-
     return JsonResponse(out, safe=False)
+
 
 
 def add_event(request):
     start = request.GET.get("start", None)
     end = request.GET.get("end", None)
     title = request.GET.get("title", None)
-    event = Events(name=str(title), start=start, end=end)
+    admin = request.user  # Get the currently logged-in user (admin)
+    event = Events(name=str(title), start=start, end=end, admin=admin)
     event.save()
     data = {}
     return JsonResponse(data)
+
 
 
 def update(request):
@@ -247,7 +260,10 @@ def update(request):
     end = request.GET.get("end", None)
     title = request.GET.get("title", None)
     id = request.GET.get("id", None)
-    event = Events.objects.get(id=id)
+    admin = request.user  # Get the currently logged-in user (admin)
+
+    # Fetch the event only if it belongs to the admin
+    event = Events.objects.get(id=id, admin=admin)
     event.start = start
     event.end = end
     event.name = title
@@ -256,9 +272,13 @@ def update(request):
     return JsonResponse(data)
 
 
+
 def remove(request):
     id = request.GET.get("id", None)
-    event = Events.objects.get(id=id)
+    admin = request.user  # Get the currently logged-in user (admin)
+
+    # Fetch the event only if it belongs to the admin
+    event = Events.objects.get(id=id, admin=admin)
     event.delete()
     data = {}
     return JsonResponse(data)
@@ -269,6 +289,9 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 
+from django.contrib.auth.decorators import login_required
+
+@login_required  # Ensure the user is logged in
 @csrf_exempt
 def add_recurring_event(request):
     if request.method == "POST":
@@ -290,12 +313,16 @@ def add_recurring_event(request):
             initial_event_start = datetime.combine(start_date, start_time)
             initial_event_end = initial_event_start + timedelta(hours=duration)
 
+            # Get the current logged-in user (admin)
+            admin_user = request.user
+
             # Create and save the initial event
             initial_event = Events(
                 name=title,
                 start=initial_event_start,
                 end=initial_event_end,
-                is_recurring=True  # Mark as recurring
+                is_recurring=True,  # Mark as recurring
+                admin=admin_user   # Link event to the logged-in admin
             )
             initial_event.save()
 
@@ -311,7 +338,8 @@ def add_recurring_event(request):
                         name=title,
                         start=new_event_start,
                         end=new_event_end,
-                        is_recurring=True
+                        is_recurring=True,
+                        admin=admin_user  # Link event to the logged-in admin
                     )
                     new_event.save()
 
@@ -339,3 +367,9 @@ def add_recurring_event(request):
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)
 
+def month (request):
+    return render(request, 'month.html')
+def week (request):
+    return render(request, 'week.html')
+def userhome (request):
+    return render(request, 'userhome.html')

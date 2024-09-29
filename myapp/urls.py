@@ -18,5 +18,10 @@ urlpatterns = [
     path('add_event/', views.add_event, name='add_event'),
     path('update/', views.update, name='update'),
     path('remove/',views.remove,name='remove'),
+    path('index/', views.index, name='index'),
+    path('add_recurring_event/', views.add_recurring_event, name='add_recurring_event'),
 
+    path('week/', views.week, name='week'),
+    path('month/', views.month, name='month'),
+    path('userhome/', views.userhome, name='userhome'),
    ]

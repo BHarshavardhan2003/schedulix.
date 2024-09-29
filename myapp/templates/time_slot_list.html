@@ -1,17 +1,92 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Time Slot List</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        /* Container */
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Time Slot List */
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #f9f9f9;
+            border-left: 5px solid #007bff;
+            border-radius: 4px;
+        }
+
+        li:hover {
+            background-color: #e9ecef;
+        }
+
+        /* Add Button */
+        a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        a:hover {
+            background-color: #0056b3;
+        }
+
+        /* Empty List Message */
+        li.no-slots {
+            text-align: center;
+            color: #888;
+        }
+    </style>
 </head>
 <body>
-    <h1>Time Slot List</h1>
-    <ul>
-        {% for time_slot in time_slots %}
-            <li>{{ time_slot.admin }} - {{ time_slot.day_of_week }}: {{ time_slot.start_time }} to {{ time_slot.end_time }}</li>
-        {% empty %}
-            <li>No time slots available.</li>
-        {% endfor %}
-    </ul>
-    <a href="{% url 'add_time_slot' %}">Add New Time Slot</a>
+
+    <div class="container">
+        <h1>Time Slot List</h1>
+        <ul>
+            {% for time_slot in time_slots %}
+                <li>{{ time_slot.admin }} - {{ time_slot.day_of_week }}: {{ time_slot.start_time }} to {{ time_slot.end_time }}</li>
+            {% empty %}
+                <li class="no-slots">No time slots available.</li>
+            {% endfor %}
+        </ul>
+        <a href="{% url 'add_time_slot' %}">Add New Time Slot</a>
+    </div>
+
 </body>
 </html>

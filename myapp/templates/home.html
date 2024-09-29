@@ -1,9 +1,7 @@
 {% extends 'base_home.html' %}
 <title>{% block title %}Welcome {{ user.username }}!{% endblock %}</title>
 {% block content %}
-    <h1>Admin Dashboard</h1>
-<p>Welcome, {{ request.user.username }}! You can assign tasks and manage users.</p>
-    <p>{{ greeting }}</p>
+
 {% endblock %}
 {% block content3 %}
     <h1>{{ greeting }}</h1>
