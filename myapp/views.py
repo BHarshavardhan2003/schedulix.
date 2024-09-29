@@ -242,18 +242,17 @@ def all_events(request):
     return JsonResponse(out, safe=False)
 
 
+
 def add_event(request):
     start = request.GET.get("start", None)
     end = request.GET.get("end", None)
     title = request.GET.get("title", None)
     admin = request.user  # Get the currently logged-in user (admin)
-
-    # Create a new event and set is_booked to True
-    event = Events(name=str(title), start=start, end=end, admin=admin, is_booked=True)
+    event = Events(name=str(title), start=start, end=end, admin=admin)
     event.save()
-
     data = {}
     return JsonResponse(data)
+
 
 
 def update(request):
@@ -268,9 +267,7 @@ def update(request):
     event.start = start
     event.end = end
     event.name = title
-    event.is_booked = True  # Ensure the event is marked as booked
     event.save()
-
     data = {}
     return JsonResponse(data)
 

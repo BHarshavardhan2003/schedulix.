@@ -40,8 +40,8 @@ from django.contrib import admin
 from .models import Events
 
 class EventsAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'start', 'end', 'is_recurring','is_booked','admin')
+    list_display = ('id', 'name', 'start', 'end', 'is_recurring', 'admin')
+
+
+
 admin.site.register(Events, EventsAdmin)
-
-
-
