@@ -20,8 +20,11 @@ urlpatterns = [
     path('remove/',views.remove,name='remove'),
     path('index/', views.index, name='index'),
     path('add_recurring_event/', views.add_recurring_event, name='add_recurring_event'),
+    path('create-meeting/', views.create_meeting, name='create_meeting'),
 
+    path('messages/', views.view_messages, name='view_messages'),
     path('week/', views.week, name='week'),
     path('month/', views.month, name='month'),
     path('userhome/', views.userhome, name='userhome'),
+    path('meeting-responses/', views.view_meeting_responses, name='meeting_status'),
    ]

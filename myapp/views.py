@@ -228,6 +228,7 @@ def index(request):
 from django.http import JsonResponse
 from .models import Events
 
+
 def all_events(request):
     admin = request.user  # Get the currently logged-in user (admin)
     all_events = Events.objects.filter(admin=admin)  # Filter events by admin
@@ -373,3 +374,107 @@ def week (request):
     return render(request, 'week.html')
 def userhome (request):
     return render(request, 'userhome.html')
+
+
+
+#fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.auth.models import User
+from .models import Meeting, Invitation,Message
+from .forms import MeetingForm
+
+from django.utils import timezone
+
+
+def create_meeting(request):
+    if request.method == 'POST':
+        form = MeetingForm(request.POST)
+        if form.is_valid():
+            meeting = form.save(commit=False)
+            meeting.created_by = request.user
+            meeting.save()
+
+            invitee_ids = request.POST.getlist('invitees')
+            if not invitee_ids:
+                messages.error(request, 'Please select at least one invitee.')
+                return redirect('create_meeting')
+
+            for invitee_id in invitee_ids:
+                try:
+                    invitee = User.objects.get(id=invitee_id)
+                    Invitation.objects.create(meeting=meeting, invitee=invitee)
+
+                    # Create a message for the invitee
+                    message_text = f"You have been invited to a meeting: {meeting.title} on {meeting.date} at {meeting.start_time}."
+                    Message.objects.create(user=invitee, message=message_text, meeting=meeting)
+                except User.DoesNotExist:
+                    print(f"User with ID {invitee_id} does not exist.")
+
+            messages.success(request, 'Invites sent successfully!')
+            return redirect('create_meeting')
+    else:
+        form = MeetingForm()
+
+    users = User.objects.filter(is_staff=False)
+    admins = User.objects.filter(is_staff=True)
+
+    return render(request, 'create_meeting.html', {
+        'form': form,
+        'users': users,
+        'admins': admins,
+    })
+
+
+from django.shortcuts import get_object_or_404
+
+
+from django.shortcuts import get_object_or_404
+
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from .models import Message, Invitation
+
+
+
+def view_messages(request):
+    messages_list = Message.objects.filter(user=request.user)
+
+    if request.method == 'POST':
+        invitation_id = request.POST.get('invitation_id')
+        status = request.POST.get('status')
+        decline_reason = request.POST.get('decline_reason', '').strip()
+
+        if not status:
+            messages.error(request, "Please select either Accept or Decline.")
+            return redirect('view_messages')
+
+        invitation = get_object_or_404(Invitation, id=invitation_id, invitee=request.user)
+
+        if status == 'Declined' and not decline_reason:
+            messages.error(request, "Please provide a reason for declining the invitation.")
+            return redirect('view_messages')
+
+        invitation.status = status
+        invitation.decline_reason = decline_reason if status == 'Declined' else ''
+        invitation.save()
+        messages.success(request, "Your response has been submitted.")
+
+        return redirect('view_messages')
+
+    return render(request, 'view_messages.html', {'messages': messages_list})
+
+
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from .models import Meeting
+
+@login_required
+def view_meeting_responses(request):
+    # Fetch all meetings created by the logged-in user
+    meetings = Meeting.objects.filter(created_by=request.user).prefetch_related('invitations')
+    return render(request, 'meeting_status.html', {'meetings': meetings})

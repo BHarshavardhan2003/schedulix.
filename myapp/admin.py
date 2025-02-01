@@ -43,5 +43,17 @@ class EventsAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'start', 'end', 'is_recurring', 'admin')
 
 
+from django.contrib import admin
+from .models import Meeting, Invitation
 
-admin.site.register(Events, EventsAdmin)
+class MeetingAdmin(admin.ModelAdmin):
+    list_display = ['title', 'date', 'start_time', 'end_time', 'created_by']  # Display these fields in the list view
+
+
+class InvitationAdmin(admin.ModelAdmin):
+    list_display = ['meeting', 'invitee', 'status', 'decline_reason']  # Display these fields in the list view
+
+
+# Register the models with the admin panel
+admin.site.register(Meeting, MeetingAdmin)
+admin.site.register(Invitation, InvitationAdmin)

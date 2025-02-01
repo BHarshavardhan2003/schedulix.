@@ -124,6 +124,8 @@
                  <li><a href="{% url 'add_time_slot' %}"><i class="fas fa-calendar-alt"></i>add_time_slot</a></li>
                 <li><a href="{% url 'index' %}"><i class="fas fa-calendar-alt"></i>calendar</a></li>
                 <li><a href="{% url 'add_recurring_event' %}"><i class="fas fa-calendar-alt"></i>add recurring event</a></li>
+                <li><a href="{% url 'create_meeting' %}"><i class="fas fa-cogs"></i>Group Meeting</a></li>
+                 <li><a href="{% url 'meeting_status' %}"><i class="fas fa-bell"></i>Meeting status</a></li>
                 <li><a href="{% url 'admin:index' %}"><i class="fas fa-cogs"></i>Go to admin panel</a></li>
             {% endif %}
      {% if not user.is_staff %}
@@ -134,7 +136,11 @@
             {% if unread_notifications_count > 0 %}
                 <span class="badge">{{ unread_notifications_count }}</span>
             {% endif %}
+         <li><a href="{% url 'view_messages' %}"><i class="fas fa-bell"></i>Meeting Messages</a></li>
+
+
         </a></li>
+
     {% endif %}
             <li><a href="{% url 'logout_confirm' %}"><i class="fas fa-sign-out-alt"></i>Logout</a></li>
         </ul>

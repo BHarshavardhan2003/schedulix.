@@ -54,3 +54,18 @@ class AppointmentForm(forms.ModelForm):
                 self.fields['start_time'].queryset = AdminTimeSlot.objects.filter(admin_id=admin_id, is_booked=False)
             except (ValueError, TypeError):
                 pass
+#ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+from django import forms
+from .models import Meeting
+
+class MeetingForm(forms.ModelForm):
+    class Meta:
+        model = Meeting
+        fields = ['title', 'date', 'start_time', 'end_time']
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date'}),
+            'start_time': forms.TimeInput(attrs={'type': 'time'}),
+            'end_time': forms.TimeInput(attrs={'type': 'time'}),
+        }
+
+#cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc

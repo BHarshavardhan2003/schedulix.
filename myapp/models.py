@@ -41,7 +41,7 @@ class Appointment(models.Model):
 from django.utils import timezone
 
 class Notification(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='general_notifications')  # Changed related_name
     message = models.TextField()
     timestamp = models.DateTimeField(default=timezone.now)
     is_read = models.BooleanField(default=False)
@@ -64,3 +64,45 @@ class Events(models.Model):
 
     class Meta:
         db_table = "tblevents"
+
+#FFFFfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+from django.db import models
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+class Meeting(models.Model):
+    title = models.CharField(max_length=255)
+    date = models.DateField()
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_meetings')
+
+    def __str__(self):
+        return self.title
+
+class Invitation(models.Model):
+    meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE, related_name='invitations')
+    invitee = models.ForeignKey(User, on_delete=models.CASCADE, related_name='invitations')
+    STATUS_CHOICES = [
+        ('Pending', 'Pending'),
+        ('Accepted', 'Accepted'),
+        ('Declined', 'Declined'),
+    ]
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Pending')
+    decline_reason = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.invitee.username} - {self.status} - {self.meeting.title}"
+
+
+#cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+class Message(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='messages')
+    message = models.TextField()
+    meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE, related_name='messages')
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Message for {self.user.username} - {self.message}"
