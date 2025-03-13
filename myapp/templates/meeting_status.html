@@ -20,9 +20,12 @@
                     <td>{{ invitation.status }}</td>
                     <td>{{ invitation.decline_reason|default:"-" }}</td>
                 </tr>
+
             {% endfor %}
         </tbody>
     </table>
+    <button type="submit" >Schedule</button>
+                        <button type="submit" >Cancle</button>
     <br>
 {% endfor %}
 
